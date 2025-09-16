@@ -54,7 +54,7 @@ export const createReport = async (req, res) => {
         });
         stream.end(req.files.image[0].buffer);
       });
-      imageUrl = result.secure_url; // Retrieve the image URL from Cloudinary
+      imageUrl = result.secure_url; 
       console.log('Image uploaded to Cloudinary successfully:', imageUrl);
     } catch (error) {
       console.error('Image upload error:', error);
@@ -66,21 +66,21 @@ export const createReport = async (req, res) => {
   const trackNumber = Math.floor(1000000 + Math.random() * 9000000).toString();
   console.log('Generated track number:', trackNumber);
 
-  // Create a new report with status set to "received" by default
+  // Create and save the report hoise 
   const report = new Report({
     incidentType,
     reportTitle,
     description,
     location,
     image: imageUrl ? { url: imageUrl } : null,
-    trackNumber, // Save the track number
-    status: 'received', // Default status
+    trackNumber, 
+    status: 'received', 
   });
 
   try {
     await report.save();
     console.log('Report saved to database successfully. Report ID:', report._id);
-    res.status(201).json({ report, trackNumber }); // Include the track number in the response
+    res.status(201).json({ report, trackNumber }); 
   } catch (err) {
     console.error('Error saving report to database:', err);
     res.status(500).json({ message: err.message });
@@ -99,14 +99,13 @@ export const getReportByTrackNumber = async (req, res) => {
       return res.status(404).json({ message: 'Report not found' });
     }
 
-    res.json(report); // Return the full report, including its status
+    res.json(report); // Return the full report
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-// Update the status of a report
-// Controller to get all reports
+
 export const getAllReports = async (req, res) => {
   try {
     const reports = await Report.find({});
@@ -116,7 +115,7 @@ export const getAllReports = async (req, res) => {
   }
 };
 
-// Controller to update the status of a report
+
 export const updateReportStatus = async (req, res) => {
   const { trackNumber } = req.params;
   const { status } = req.body;

@@ -8,15 +8,15 @@ const reportSchema = new mongoose.Schema(
     description:  { type: String, required: true, trim: true },
     location:     { type: String, trim: true },
     image: {
-      url: { type: String },  // Store the URL from Cloudinary or ImageKit
+      url: { type: String },  // Store the URL from Cloudinary 
     },
     trackNumber: { type: String, unique: true, required: true },
     status: { 
       type: String, 
-      default: 'received', // Default status can be 'received', other statuses could be 'processing', 'completed', etc.
-      enum: ['received', 'processing', 'completed'], // Restrict values to these
+      default: 'received', 
+      enum: ['received', 'processing', 'completed'], // Restrict values 
     },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Optional, for authenticated users
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, 
   },
   { timestamps: true }
 );

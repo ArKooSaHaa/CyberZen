@@ -2,7 +2,7 @@
 import multer from 'multer';
 
 // Configure Multer to store files in memory
-const storage = multer.memoryStorage();
+const storage = multer.memoryStorage(); // buffeer a rakhe
 
 // Define allowed file types
 const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
