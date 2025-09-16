@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import User from "../models/UserName.js";
 
-// GET /api/User  -> list users (no passwords)
+// list users 
 export const getUser = async (_req, res) => {
   try {
     const users = await User.find().select("-passwordHash");
@@ -13,10 +13,10 @@ export const getUser = async (_req, res) => {
   }
 };
 
-// POST /api/User  -> signup
+// POST signup
 export const newUser = async (req, res) => {
   try {
-    console.log("📝 New user signup request:", req.body);
+    console.log(" New user signup request:", req.body);
 
     const {
       firstName, lastName, nid,
@@ -24,19 +24,18 @@ export const newUser = async (req, res) => {
       password, confirmPassword
     } = req.body;
 
-    // Validation
     if (!firstName || !lastName || !nid || !username || !email || !phone || !password) {
-      console.log("❌ Missing required fields");
+      console.log(" Missing required fields");
       return res.status(400).json({ message: "All fields are required." });
     }
     if (password !== confirmPassword) {
-      console.log("❌ Passwords do not match");
+      console.log(" Passwords do not match");
       return res.status(400).json({ message: "Passwords do not match." });
     }
 
-    // DB not connected? Provide a safe fallback (for local testing)
+    // DB jodi connected na hoi taile local test kortesi
     if (mongoose.connection.readyState !== 1) {
-      console.log("❌ Database not connected - using fallback response");
+      console.log(" Database not connected - using fallback response");
       const { password: _pw, confirmPassword: _cp, ...userData } = req.body;
       return res.status(201).json({
         ...userData,
@@ -46,27 +45,27 @@ export const newUser = async (req, res) => {
       });
     }
 
-    // Existing user?
+    // Existing user
     const exists = await User.findOne({ $or: [{ email }, { username }] });
     if (exists) {
-      console.log("❌ User already exists:", { email, username });
-      return res.status(409).json({ message: "Email or username already in use." });
+      console.log("User already exists:", { email, username });
+      return res.status(409).json({ message: "Email or username already in use." }); // server client a message pass kortesee
     }
 
     // Hash & create
     const passwordHash = await bcrypt.hash(password, 10);
-    console.log("🔐 Password hashed successfully");
+    console.log(" Password hashed successfully");
 
     const user = await User.create({
       firstName, lastName, nid, username, email, phone, passwordHash,
     });
 
-    console.log("✅ User created successfully:", user._id);
+    console.log("User created successfully:", user._id);
 
     const { passwordHash: _omit, ...safe } = user.toObject();
     return res.status(201).json(safe);
   } catch (err) {
-    console.error("❌ Error creating user:", err);
+    console.error(" Error creating user:", err);
     if (err.name === "MongoNetworkError" || err.name === "MongoServerSelectionError") {
       return res.status(503).json({ message: "Database service unavailable. Please try again later." });
     }
@@ -84,7 +83,7 @@ export const loginUser = async (req, res) => {
 
     // DB fallback for local testing
     if (mongoose.connection.readyState !== 1) {
-      console.log("❌ Database not connected - using fallback login response");
+      console.log("Database not connected - using fallback login response");
       const token = `fallback-jwt-token-${Date.now()}`;
       return res.json({
         token,
@@ -119,7 +118,7 @@ export const loginUser = async (req, res) => {
     const { passwordHash, ...safe } = user.toObject();
     return res.json({ token, user: safe });
   } catch (err) {
-    console.error("❌ Error during login:", err);
+    console.error("Error during login:", err);
     if (err.name === "MongoNetworkError" || err.name === "MongoServerSelectionError") {
       return res.status(503).json({ message: "Database service unavailable. Please try again later." });
     }
@@ -127,20 +126,19 @@ export const loginUser = async (req, res) => {
   }
 };
 
-// POST /api/User/change-password  -> protected
+// POST /api/User/change-password
 export const changePassword = async (req, res) => {
   try {
-    const { currentPassword, newPassword } = req.body;
-    if (!currentPassword || !newPassword) {
-      return res.status(400).json({ message: "Both current and new passwords are required." });
+    const { username, currentPassword, newPassword } = req.body;
+    if (!username || !currentPassword || !newPassword) {
+      return res.status(400).json({ message: "Username, current password, and new password are required." });
     }
-    if (!req.userId) return res.status(401).json({ message: "Unauthorized" });
 
     if (mongoose.connection.readyState !== 1) {
       return res.status(503).json({ message: "Database service unavailable. Please try again later." });
     }
 
-    const user = await User.findById(req.userId);
+    const user = await User.findOne({ username });
     if (!user) return res.status(404).json({ message: "User not found." });
 
     const ok = await bcrypt.compare(currentPassword, user.passwordHash);
@@ -158,7 +156,7 @@ export const changePassword = async (req, res) => {
   }
 };
 
-// GET /api/User/me  -> protected; return current user (no passwordHash)
+// GET /api/User/me  -> protected; return current user
 export const me = async (req, res) => {
   try {
     if (!req.userId) return res.status(401).json({ message: "Unauthorized" });
@@ -198,17 +196,17 @@ export const deleteUserAccount = async (req, res) => {
 
     // Log deletion reason if provided
     if (reason) {
-      console.log(`🗑️ Account deletion requested for user ${user.username} (${user.email}). Reason: ${reason}`);
+      console.log(`Account deletion requested for user ${user.username} (${user.email}). Reason: ${reason}`);
     }
 
     // Delete the user
     await User.findByIdAndDelete(req.userId);
 
-    console.log(`✅ Account deleted for user ${user.username} (${user.email})`);
+    console.log(`Account deleted for user ${user.username} (${user.email})`);
 
     return res.json({ message: "Account deleted successfully." });
   } catch (err) {
-    console.error("❌ Error deleting account:", err);
+    console.error("Error deleting account:", err);
     return res.status(500).json({ message: err.message });
   }
 };
