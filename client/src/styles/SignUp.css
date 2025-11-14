@@ -1,0 +1,463 @@
+
+.signup-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+  background: #000;
+  padding: 20px 0;
+}
+
+/* Video Background */
+.video-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.background-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(26, 26, 46, 0.6) 50%,
+    rgba(22, 33, 62, 0.7) 100%
+  );
+  z-index: 2;
+}
+
+/* Flowing Color Effects */
+.flowing-colors {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.color-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.6;
+  animation: floatOrb 8s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, #00ffff, transparent);
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, #8b5cf6, transparent);
+  top: 60%;
+  right: 15%;
+  animation-delay: 2s;
+}
+
+.orb-3 {
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, #ff0080, transparent);
+  bottom: 20%;
+  left: 20%;
+  animation-delay: 4s;
+}
+
+.orb-4 {
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, #00ff88, transparent);
+  top: 40%;
+  left: 60%;
+  animation-delay: 6s;
+}
+
+@keyframes floatOrb {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-30px) scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+/* Emergency Contact */
+.emergency-contact {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid #ff0000;
+  border-radius: 8px;
+  padding: 8px 16px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+}
+
+.emergency-text {
+  color: #ff0000;
+  font-weight: bold;
+  font-size: 14px;
+  text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+/* Page Logo */
+.page-logo {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+}
+
+.page-logo .logo-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.page-logo .logo-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #00ffff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+}
+
+.page-logo .logo-link:hover .logo-text {
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+  transform: scale(1.05);
+}
+
+/* Sign Up Form Container */
+.signup-form-container {
+  position: relative;
+  z-index: 4;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 20px;
+}
+
+.form-background {
+  position: relative;
+  background: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.form-glow-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 20px;
+  background: linear-gradient(45deg, 
+    transparent 0%, 
+    rgba(0, 255, 255, 0.1) 25%, 
+    rgba(139, 92, 246, 0.1) 50%, 
+    rgba(255, 0, 128, 0.1) 75%, 
+    transparent 100%
+  );
+  animation: glowRotate 4s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes glowRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Form Header */
+.form-header {
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+  z-index: 2;
+}
+
+.form-title {
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: bold;
+  margin: 0 0 8px 0;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  letter-spacing: 2px;
+  background: linear-gradient(45deg, #00ffff, #8b5cf6, #ff0080);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.form-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+/* Form Fields */
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  position: relative;
+  z-index: 2;
+}
+
+.form-section {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 20px;
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.section-title {
+  color: #00ffff;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 15px 0;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  letter-spacing: 1px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+/* Sign In Prompt */
+.signin-prompt {
+  text-align: center;
+  margin-top: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+/* Secure Registration */
+.secure-registration {
+  margin-top: 30px;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.secure-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 255, 0, 0.1);
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  border-radius: 20px;
+  padding: 8px 16px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.secure-dot {
+  width: 8px;
+  height: 8px;
+  background: #00ff00;
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+}
+
+.secure-text {
+  color: #00ff00;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1); 
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+  }
+  50% { 
+    opacity: 0.5; 
+    transform: scale(1.2); 
+    box-shadow: 0 0 20px rgba(0, 255, 0, 1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .signup-form-container {
+    margin: 0 10px;
+  }
+  
+  .form-background {
+    padding: 30px 20px;
+  }
+  
+  .form-title {
+    font-size: 24px;
+  }
+  
+  .field-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .emergency-contact {
+    top: 10px;
+    right: 10px;
+    padding: 6px 12px;
+  }
+  
+  .emergency-text {
+    font-size: 12px;
+  }
+
+  .page-logo {
+    top: 10px;
+    left: 10px;
+  }
+
+  .page-logo .logo-text {
+    font-size: 20px;
+  }
+
+  .color-orb {
+    filter: blur(20px);
+  }
+
+  .orb-1, .orb-2, .orb-3, .orb-4 {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .signup-container {
+    padding: 10px 0;
+  }
+  
+  .form-background {
+    padding: 20px 15px;
+  }
+  
+  .form-title {
+    font-size: 20px;
+  }
+  
+  .section-title {
+    font-size: 14px;
+  }
+  
+  .form-fields {
+    gap: 20px;
+  }
+
+  .page-logo .logo-text {
+    font-size: 18px;
+  }
+}
+
+/* Performance optimizations for video */
+@media (prefers-reduced-motion: reduce) {
+  .background-video {
+    display: none;
+  }
+  
+  .color-orb {
+    animation: none;
+  }
+  
+  .form-glow-border {
+    animation: none;
+  }
+}
+
+/* Submit message styles */
+.submit-message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+  font-weight: 500;
+  text-align: center;
+  border: 2px solid transparent;
+  background: rgba(0, 0, 0, 0.1);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #00ff88;
+  border-color: #00ff88;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+  animation: messageGlow 2s ease-in-out infinite alternate;
+}
+
+.submit-message.error {
+  color: #ff4757;
+  border-color: #ff4757;
+  box-shadow: 0 0 20px rgba(255, 71, 87, 0.3);
+  animation: errorGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes messageGlow {
+  0% {
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
+  }
+}
+
+@keyframes errorGlow {
+  0% {
+    box-shadow: 0 0 20px rgba(255, 71, 87, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 30px rgba(255, 71, 87, 0.6);
+  }
+}
