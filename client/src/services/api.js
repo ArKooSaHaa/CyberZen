@@ -1,12 +1,29 @@
 import axios from "axios";
 
-const API_BASE_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
+// Allow an override stored in browser localStorage so deployed static sites
+// (e.g. Vercel) can be pointed at the real backend without rebuilding.
+const envBase = process.env.REACT_APP_API_BASE_URL;
+let overrideBase = null;
+if (typeof window !== "undefined") {
+  overrideBase = localStorage.getItem("REACT_APP_API_BASE_URL_OVERRIDE");
+}
+
+const resolvedBase = (overrideBase && overrideBase.trim()) || (envBase && envBase.trim()) || "";
+const API_BASE_URL = resolvedBase
+  ? `${resolvedBase.replace(/\/+$/, "")}/api`
+  : "/api"; // fallback to relative path if nothing is set
 
 // axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: { "Content-Type": "application/json" },
 });
+
+// Helpful debug log to confirm which base the app is using at runtime
+if (typeof window !== 'undefined') {
+  // eslint-disable-next-line no-console
+  console.info('[api] API_BASE_URL resolved to:', API_BASE_URL);
+}
 
 // fetch hoche
 const authHeaders = () => {
@@ -104,7 +121,7 @@ export const submitReport = async (formData) => {
 
     // Do NOT set 'Content-Type' manually for FormData; the browser will set the correct
     // multipart boundary. Include auth header when available.
-    const response = await axios.post(`${API_BASE_URL}/reports`, formData, { headers });
+    const response = await api.post(`/reports`, formData, { headers });
     return response;
   } catch (error) {
     throw new Error(errMsg(error));

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import Intro from './components/Intro';
+import ApiConfigPrompt from './components/ApiConfigPrompt';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import HomePage from './pages/HomePage';
@@ -50,6 +51,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className="App">
+        <ApiConfigPrompt />
         <Routes>
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
