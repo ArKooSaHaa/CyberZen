@@ -40,12 +40,13 @@ const Profile = () => {
 
   const handleChangePassword = () => navigate("/change-password");
   const handleLogout = () => {
-    // clear all possible auth keys
+    // clear all possible auth keys BUT keep chatUserId for chat history persistence
     ["token", "authToken", "user", "userData"].forEach((k) => {
       localStorage.removeItem(k);
       sessionStorage.removeItem(k);
     });
     sessionStorage.clear();
+    // Note: chatUserId is intentionally NOT cleared so chat history persists across logouts
     navigate("/signin");
   };
 
@@ -54,7 +55,6 @@ const Profile = () => {
       <div className="background-image" style={{ backgroundImage: `url(${backgroundImage})` }} />
       <div className="background-overlay" />
 
-      <div className="emergency-contact"><span className="emergency-text">Emergency: 999</span></div>
       <NavigationBar currentPage="profile" />
 
       <main className="main-content">

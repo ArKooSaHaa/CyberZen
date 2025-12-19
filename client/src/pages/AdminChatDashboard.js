@@ -1,49 +1,100 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/AdminChatDashboard.css';
-import { subscribeToChats, subscribeToMessages, createOrEnsureChat, sendMessage } from '../services/chatService';
+import { subscribeToChats, subscribeToMessages, createOrEnsureChat, sendMessage, getLastMessageTime } from '../services/chatService';
 
 const AdminChatDashboard = () => {
   const navigate = useNavigate();
   const [chats, setChats] = useState([]);
+  const [unreadMap, setUnreadMap] = useState({});
   const [selectedChat, setSelectedChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const messagesRef = useRef(null);
 
+  // -----------------------------
+  // SORTED CHATS EFFECT
+  // -----------------------------
   useEffect(() => {
-    const unsub = subscribeToChats(setChats);
+    const unsub = subscribeToChats(async (rawChats) => {
+      try {
+
+        // 1️⃣ Sort chats by updatedAt DESC (latest first)
+        const sortedChats = [...rawChats].sort((a, b) => {
+          const timeA = a.updatedAt?.seconds
+            ? a.updatedAt.seconds * 1000
+            : a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+
+          const timeB = b.updatedAt?.seconds
+            ? b.updatedAt.seconds * 1000
+            : b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+
+          return timeB - timeA; // newest at top
+        });
+
+        // 2️⃣ Compute unread status
+        const lastTimes = await Promise.all(sortedChats.map(c => getLastMessageTime(c.id)));
+        const newUnread = {};
+
+        sortedChats.forEach((c, idx) => {
+          const lastAt = lastTimes[idx];
+          const openedAt = c.openedByAdminAt ? new Date(c.openedByAdminAt) : null;
+          newUnread[c.id] = lastAt && (!openedAt || openedAt < lastAt);
+        });
+
+        setChats(sortedChats);
+        setUnreadMap(prev => ({ ...prev, ...newUnread }));
+
+      } catch (err) {
+        console.error('Error computing unread statuses', err);
+        setChats(rawChats);
+      }
+    });
+
     return () => unsub && unsub();
   }, []);
 
+  // Subscribe to selected chat messages
   useEffect(() => {
     if (!selectedChat) return;
-    const unsub = subscribeToMessages(selectedChat.id, setMessages);
+
+    const unsub = subscribeToMessages(selectedChat.id, (msgs) => {
+      setMessages(msgs);
+      setUnreadMap(prev => ({ ...prev, [selectedChat.id]: false }));
+    });
+
     return () => unsub && unsub();
   }, [selectedChat]);
 
+  // Auto scroll to bottom
   useEffect(() => {
-    if (messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+    if (messagesRef.current) {
+      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+    }
   }, [messages]);
 
+  // Open chat
   const openChat = async (chat) => {
     setSelectedChat(chat);
     await createOrEnsureChat(chat.id, { openedByAdminAt: new Date().toISOString() });
+    setUnreadMap(prev => ({ ...prev, [chat.id]: false }));
   };
 
+  // Send admin message
   const handleSend = async () => {
     const messageText = text.trim();
     if (!messageText || !selectedChat) return;
-    
-    // Clear input immediately for better UX
+
     setText('');
-    
+
     try {
       await sendMessage(selectedChat.id, messageText, 'admin');
+
+      // Update chat updatedAt so it jumps to top
+      await createOrEnsureChat(selectedChat.id, { updatedAt: new Date().toISOString() });
+
     } catch (err) {
       console.error('Error sending message:', err);
-      // Optionally restore the text if sending failed
-      // setText(messageText);
     }
   };
 
@@ -54,6 +105,7 @@ const AdminChatDashboard = () => {
           <span className="back-icon">←</span>
           <span>Back to Admin</span>
         </button>
+
         <div className="header-title-section">
           <h2 className="admin-chat-title">
             <span className="title-icon">💬</span>
@@ -61,41 +113,58 @@ const AdminChatDashboard = () => {
           </h2>
           <div className="header-glow-line"></div>
         </div>
+
         <div className="chat-count-badge">
           <span className="badge-number">{chats.length}</span>
           <span className="badge-label">Chats</span>
         </div>
       </div>
+
       <div className="admin-chat-body">
+        {/* ---------------- Chat List ---------------- */}
         <div className="chat-list">
           <div className="chat-list-header">
             <h3 className="inbox-title">
-              <span className="inbox-icon">📥</span>
-              Inbox
+              <span className="inbox-icon">📥</span> Inbox
             </h3>
             <div className="inbox-count">{chats.length} {chats.length === 1 ? 'chat' : 'chats'}</div>
           </div>
+
           <div className="chat-items">
             {chats.map(chat => (
-              <div 
-                key={chat.id} 
-                className={`chat-item ${selectedChat && selectedChat.id === chat.id ? 'active' : ''}`} 
+              <div
+                key={chat.id}
+                className={`chat-item ${selectedChat && selectedChat.id === chat.id ? 'active' : ''}`}
                 onClick={() => openChat(chat)}
               >
                 <div className="chat-item-content">
                   <div className="chat-avatar">👤</div>
+
                   <div className="chat-info">
-                    <div className="chat-id">{chat.id}</div>
+                    <div className="chat-id">
+                      {chat.displayName || chat.name || chat.userName || chat.id}
+                    </div>
+
                     <div className="chat-meta">
-                      {chat.updatedAt ? new Date(chat.updatedAt.seconds * 1000).toLocaleString() : 'No messages'}
+                      {chat.updatedAt
+                        ? (chat.updatedAt.seconds
+                          ? new Date(chat.updatedAt.seconds * 1000).toLocaleString()
+                          : new Date(chat.updatedAt).toLocaleString())
+                        : 'No messages'}
                     </div>
                   </div>
                 </div>
+
+                {unreadMap[chat.id] && !(selectedChat && selectedChat.id === chat.id) && (
+                  <div className="unread-dot" title="New messages"></div>
+                )}
+
                 {selectedChat && selectedChat.id === chat.id && (
                   <div className="active-indicator"></div>
                 )}
               </div>
             ))}
+
             {chats.length === 0 && (
               <div className="empty">
                 <div className="empty-icon">💬</div>
@@ -106,6 +175,7 @@ const AdminChatDashboard = () => {
           </div>
         </div>
 
+        {/* ---------------- Chat Pane ---------------- */}
         <div className="chat-pane">
           {!selectedChat && (
             <div className="no-select">
@@ -121,12 +191,15 @@ const AdminChatDashboard = () => {
                 <div className="pane-header-content">
                   <div className="pane-avatar">👤</div>
                   <div className="pane-header-info">
-                    <div className="pane-title">Chat with: <strong>{selectedChat.id}</strong></div>
+                    <div className="pane-title">
+                      Chat with: <strong>{selectedChat.displayName || selectedChat.name || selectedChat.userName || selectedChat.id}</strong>
+                    </div>
                     <div className="pane-subtitle">Active conversation</div>
                   </div>
                 </div>
                 <div className="status-dot"></div>
               </div>
+
               <div className="chat-pane-messages" ref={messagesRef}>
                 {messages.length === 0 ? (
                   <div className="messages-empty">
@@ -149,18 +222,18 @@ const AdminChatDashboard = () => {
               </div>
 
               <div className="chat-pane-input">
-                <input 
-                  value={text} 
-                  onChange={(e)=>setText(e.target.value)} 
-                  onKeyDown={(e)=>{ 
-                    if(e.key==='Enter' && !e.shiftKey) {
+                <input
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
                       handleSend();
                     }
-                  }} 
-                  placeholder="Type message as admin..." 
+                  }}
+                  placeholder="Type message as admin..."
                 />
-                <button 
+                <button
                   onClick={handleSend}
                   className="send-btn"
                   disabled={!text.trim()}

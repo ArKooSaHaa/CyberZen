@@ -1,6 +1,6 @@
 // server/routes/routes.js
 import express from "express";
-import { getUser, newUser, loginUser, changePassword, me, deleteUserAccount } from "../controller/UserController.js";
+import { getUser, newUser, loginUser, changePassword, resetPassword, me, deleteUserAccount, updateEmailVerified } from "../controller/UserController.js";
 import auth from "../middleware/auth.js"; // if you created it
 import { createReport } from "../controller/reportController.js"; // Import the createReport controller
 import upload from "../middleware/upload.js"; // Import the Multer upload middleware
@@ -13,6 +13,8 @@ router.get("/users", getUser);
 router.post("/users/signup", newUser);
 router.post("/users/login", loginUser);
 router.post("/users/change-password", changePassword); // removed auth middleware
+router.post("/users/reset-password", resetPassword); // Password reset endpoint (no auth required)
+router.post("/users/update-email-verified", updateEmailVerified); // Update email verification status (no auth required)
 router.get("/users/me", auth, me);
 router.delete("/users/delete-account", auth, deleteUserAccount);
 

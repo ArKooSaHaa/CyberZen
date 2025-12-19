@@ -76,6 +76,16 @@ export const deleteAccount = async ({ password, reason }) => {
   }
 };
 
+// Update email verification status in MongoDB
+export const updateEmailVerified = async ({ email, emailVerified }) => {
+  try {
+    const response = await api.post("/users/update-email-verified", { email, emailVerified });
+    return response;
+  } catch (error) {
+    throw new Error(errMsg(error));
+  }
+};
+
 
 // Testing 
 export const getUsers = async () => {

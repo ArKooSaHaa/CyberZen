@@ -284,6 +284,18 @@
   50% { opacity: 0.7; transform: translateY(-50%) scale(1.2); }
 }
 
+/* Unread indicator: small red dot on chat item */
+.unread-dot {
+  position: absolute;
+  right: 16px;
+  top: 18px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff3b30;
+  box-shadow: 0 0 8px rgba(255, 59, 48, 0.9);
+}
+
 .empty {
   padding: 40px 20px;
   text-align: center;

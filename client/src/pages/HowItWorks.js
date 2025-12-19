@@ -28,10 +28,6 @@ const HowItWorks = () => {
       ></div>
       <div className="background-overlay"></div>
 
-      {/* Emergency Contact */}
-      <div className="emergency-contact">
-        <span className="emergency-text">Emergency: 999</span>
-      </div>
 
       {/* Navigation Bar */}
       <NavigationBar currentPage="how-it-works" />

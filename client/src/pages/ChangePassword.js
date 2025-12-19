@@ -92,10 +92,6 @@ const ChangePassword = () => {
       <div className="background-image" style={{ backgroundImage: `url(${backgroundImage})` }} />
       <div className="background-overlay"></div>
 
-      {/* Emergency Contact */}
-      <div className="emergency-contact">
-        <span className="emergency-text">Emergency: 999</span>
-      </div>
 
       {/* Navigation Bar */}
       <NavigationBar currentPage="profile" />

@@ -5,13 +5,12 @@ import mongoose from "mongoose";
 
 import connectDb from "./DB/connect.js";
 import { router } from "./routes/routes.js";
-import chatRouter from "./routes/chatRoutes.js";
+
 
 // Load environment variables
 dotenv.config();
 
 // Import and initialize Gemini service
-import geminiService from './services/geminiService.js';
 
 const app = express();
 
@@ -22,7 +21,7 @@ app.use((req, _res, next) => { console.log(req.method, req.url); next(); });
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
 app.use("/api", router);
-app.use("/api", chatRouter);
+
 
 // Global error handling middleware
 app.use((err, req, res, next) => {

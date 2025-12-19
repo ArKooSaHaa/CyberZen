@@ -141,10 +141,6 @@ const SubmitReport = () => {
       <div className="background-image" style={{ backgroundImage: `url(${backgroundImage})` }}></div>
       <div className="background-overlay"></div>
 
-      <div className="emergency-contact">
-        <span className="emergency-text">Emergency: 999</span>
-      </div>
-
       <NavigationBar currentPage="submit-report" />
 
       <main className="main-content">

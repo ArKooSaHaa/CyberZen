@@ -6,7 +6,9 @@ import Report from '../models/Report.js';
 export const createReport = async (req, res) => {
   console.log('createReport function called');
   console.log('Request body:', req.body);
-  console.log('File attached:', req.file ? 'Yes' : 'No');
+  console.log('Request content-type header:', req.headers['content-type']);
+  console.log('File attached (req.file):', req.file ? 'Yes' : 'No');
+  console.log('Files attached (req.files):', req.files ? Object.keys(req.files) : 'None');
 
   const { incidentType, reportTitle, description, location } = req.body;
 
@@ -58,7 +60,17 @@ export const createReport = async (req, res) => {
       console.log('Image uploaded to Cloudinary successfully:', imageUrl);
     } catch (error) {
       console.error('Image upload error:', error);
-      return res.status(500).json({ message: 'Error uploading image to Cloudinary: ' + error.message });
+      // Detect Cloudinary "Stale request" errors which are caused by server clock skew
+      const msg = error?.message || '';
+      if (msg.includes('Stale request')) {
+        console.error('Cloudinary stale request detected. Server clock may be out of sync.');
+        return res.status(500).json({
+          message: 'Error uploading image to Cloudinary: Stale request - server clock may be out of sync. Please sync the server time and retry.',
+          hint: 'On Windows: run "w32tm /resync" in an elevated PowerShell. On Linux: use "sudo ntpdate -u pool.ntp.org" or ensure systemd-timesyncd/chronyd is running.'
+        });
+      }
+
+      return res.status(500).json({ message: 'Error uploading image to Cloudinary: ' + msg });
     }
   }
 

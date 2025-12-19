@@ -8,6 +8,7 @@ import {
   onSnapshot,
   query,
   orderBy,
+  limit,
   getDocs
 } from 'firebase/firestore';
 
@@ -61,6 +62,25 @@ export function subscribeToChats(onUpdate) {
   } catch (err) {
     console.error('subscribeToChats error', err);
     throw err;
+  }
+}
+
+// Get the most recent message's createdAt for a chat (returns Date or null)
+export async function getLastMessageTime(chatId) {
+  try {
+    const messagesRef = collection(db, 'chats', chatId, 'messages');
+    const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(1));
+    const snap = await getDocs(q);
+    if (snap.empty) return null;
+    const d = snap.docs[0].data();
+    const ts = d.createdAt;
+    if (!ts) return null;
+    // Firestore Timestamp has toDate() method; if it's already a Date, return it
+    if (typeof ts.toDate === 'function') return ts.toDate();
+    return new Date(ts);
+  } catch (err) {
+    console.error('getLastMessageTime error', err);
+    return null;
   }
 }
 

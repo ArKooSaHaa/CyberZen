@@ -8,7 +8,9 @@ const userSchema = new mongoose.Schema(
     username:    { type: String, required: true, unique: true, trim: true },
     email:       { type: String, required: true, unique: true, lowercase: true, trim: true },
     phone:       { type: String, required: true, trim: true },
-    passwordHash:{ type: String, required: true }
+    passwordHash:{ type: String, required: true },
+    firebaseUid: { type: String, unique: true, sparse: true, trim: true }, // Firebase UID, optional but unique if present
+    emailVerified: { type: Boolean, default: false } // Email verification status from Firebase
   },
   { timestamps: true }
 );

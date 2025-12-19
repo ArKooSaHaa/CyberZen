@@ -9,6 +9,8 @@ import Button from "../components/Button";
 import LinkComponent from "../components/Link";
 
 import { signUp } from "../services/api";
+import { signUpWithFirebase, sendVerificationEmail, reloadFirebaseUser } from "../services/firebaseAuth";
+import { useNavigate } from "react-router-dom";
 
 const initialState = {
   firstName: "",
@@ -27,7 +29,11 @@ const SignUp = () => {
   const [errors, setErrors] = useState({});
   const [msg, setMsg] = useState(""); // success mesaage return korbe
   const [loading, setLoading] = useState(false);
+  const [verificationSent, setVerificationSent] = useState(false);
+  const [resendingEmail, setResendingEmail] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
   const videoRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (videoRef.current) {
@@ -81,30 +87,114 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMsg("");
+    setErrors({});
 
     if (!validateForm()) return;
 
     setLoading(true);
     try {
-      // backend er sathe connect hoitesee
-      const payload = {
+      const email = formData.email.trim();
+      const password = formData.password;
+      
+      // Additional user data
+      const additionalData = {
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
-        nidNumber: formData.nidNumber.trim(), 
+        nidNumber: formData.nidNumber.trim(),
         username: formData.username.trim(),
-        email: formData.email.trim(),
-        phoneNumber: formData.phoneNumber.trim(), 
-        password: formData.password,
-        confirmPassword: formData.confirmPassword,
+        phoneNumber: formData.phoneNumber.trim(),
       };
 
+      console.log('🔥 Starting signup process...');
+      
+      // Step 1: Create user in Firebase Authentication (for email verification)
+      let firebaseResult = null;
+      let firebaseError = null;
+      
+      try {
+        console.log('🔥 Creating Firebase Auth user...');
+        firebaseResult = await signUpWithFirebase(email, password, additionalData);
+        console.log('✅ Firebase signup successful:', firebaseResult.user.uid);
+      } catch (firebaseErr) {
+        console.error('❌ Firebase signup failed:', firebaseErr);
+        firebaseError = firebaseErr;
+        // Continue to MongoDB storage - we'll handle Firebase error later
+      }
+      
+      // Step 2: Save ALL user data to MongoDB (REQUIRED - primary storage)
+      // MongoDB is the source of truth for all user data
+      const payload = {
+        firstName: additionalData.firstName,
+        lastName: additionalData.lastName,
+        nid: additionalData.nidNumber, // Map nidNumber to nid
+        nidNumber: additionalData.nidNumber, // Keep both for compatibility
+        username: additionalData.username,
+        email: email,
+        phone: additionalData.phoneNumber, // Map phoneNumber to phone
+        phoneNumber: additionalData.phoneNumber, // Keep both for compatibility
+        password: password, // Backend will hash this
+        confirmPassword: formData.confirmPassword,
+        ...(firebaseResult && { 
+          firebaseUid: firebaseResult.user.uid, // Store Firebase UID if available
+          emailVerified: firebaseResult.user.emailVerified // Store verification status
+        })
+      };
 
-      // axios return korbe
-      const { data } = await signUp(payload);
-      setMsg(`Account created for ${data.firstName || data.username}.`);
+      console.log('💾 Saving user data to MongoDB...');
+      
+      try {
+        // CRITICAL: Store user in MongoDB (this is required)
+        const { data } = await signUp(payload);
+        console.log('✅ User data saved to MongoDB:', data._id);
+        
+        // Store user email for verification UI
+        setUserEmail(email);
+        if (firebaseResult) {
+          setVerificationSent(firebaseResult.verificationEmailSent);
+        }
+        
+        // Show success message
+        if (firebaseResult) {
+          setMsg(`✅ Account created successfully! Please check your email (${email}) and verify your account to complete registration.`);
+        } else if (firebaseError) {
+          setMsg(`⚠️ Account created in database, but email verification setup failed. ${firebaseError.message}. Please contact support.`);
+        } else {
+          setMsg(`✅ Account created successfully! Welcome, ${data.firstName || data.username}.`);
+        }
+      } catch (backendErr) {
+        console.error('❌ MongoDB storage failed:', backendErr);
+        
+        // If MongoDB fails, we should delete Firebase user if it was created
+        if (firebaseResult && firebaseResult.firebaseUser) {
+          try {
+            // Try to delete Firebase user if MongoDB save failed
+            // Note: Firebase Admin SDK is needed for this, but for now we'll just log
+            console.error('⚠️ MongoDB save failed but Firebase user was created. Manual cleanup may be needed.');
+          } catch (cleanupErr) {
+            console.error('❌ Failed to cleanup Firebase user:', cleanupErr);
+          }
+        }
+        
+        // Show error - MongoDB storage is required
+        const errorMsg = backendErr?.response?.data?.message || backendErr.message || "Failed to save user data. Please try again.";
+        setMsg(`❌ ${errorMsg}`);
+        setLoading(false);
+        return; // Stop here if MongoDB save fails
+      }
+      
     } catch (err) {
-      const m = err?.response?.data?.message || err.message || "Signup failed";
+      console.error('❌ Signup error:', err);
+      const m = err.message || err?.response?.data?.message || "Signup failed";
       setMsg(m);
+      
+      // Set specific field errors for better UX
+      if (err.code === 'auth/email-already-in-use') {
+        setErrors({ email: 'This email is already registered. Please sign in instead.' });
+      } else if (err.code === 'auth/invalid-email') {
+        setErrors({ email: 'Please enter a valid email address.' });
+      } else if (err.code === 'auth/weak-password') {
+        setErrors({ password: 'Password is too weak. Please use at least 6 characters.' });
+      }
     } finally {
       setLoading(false);
     }
@@ -112,6 +202,37 @@ const SignUp = () => {
 
   const openTermsInNewTab = () => window.open("/terms-of-service", "_blank");
   const openPrivacyInNewTab = () => window.open("/privacy-policy", "_blank");
+
+  const handleResendVerification = async () => {
+    if (!userEmail) return;
+    
+    setResendingEmail(true);
+    try {
+      await sendVerificationEmail();
+      setMsg(`✅ Verification email sent! Please check ${userEmail} and click the verification link.`);
+      setVerificationSent(true);
+    } catch (err) {
+      setMsg(err.message || 'Failed to resend verification email. Please try again.');
+    } finally {
+      setResendingEmail(false);
+    }
+  };
+
+  const handleCheckVerification = async () => {
+    try {
+      const updatedUser = await reloadFirebaseUser();
+      if (updatedUser.emailVerified) {
+        setMsg('✅ Email verified successfully! Your account is now active. Redirecting to sign in...');
+        setTimeout(() => {
+          navigate('/signin');
+        }, 2000);
+      } else {
+        setMsg('⚠️ Email not yet verified. Please check your email and click the verification link.');
+      }
+    } catch (err) {
+      setMsg('Please sign in to check verification status.');
+    }
+  };
 
   return (
     <div className="signup-container">
@@ -259,11 +380,72 @@ const SignUp = () => {
                 disabled={loading}
               />
 
-                             {msg && (
-                 <div className={`submit-message ${msg.includes('failed') || msg.includes('already') || msg.includes('required') || msg.includes('match') ? 'error' : ''}`} role="alert">
-                   {msg}
-                 </div>
-               )}
+              {msg && (
+                <div className={`submit-message ${msg.includes('failed') || msg.includes('already') || msg.includes('required') || msg.includes('match') || msg.includes('not yet') ? 'error' : ''}`} role="alert">
+                  {msg}
+                </div>
+              )}
+
+              {/* Email Verification Section */}
+              {verificationSent && userEmail && (
+                <div className="verification-section" style={{
+                  marginTop: '20px',
+                  padding: '15px',
+                  backgroundColor: '#f0f8ff',
+                  border: '1px solid #4a90e2',
+                  borderRadius: '8px',
+                  textAlign: 'center'
+                }}>
+                  <div style={{ marginBottom: '10px' }}>
+                    <strong style={{ color: '#4a90e2' }}>📧 Verification Email Sent!</strong>
+                  </div>
+                  <p style={{ fontSize: '14px', color: '#333', marginBottom: '15px' }}>
+                    We've sent a verification email to <strong>{userEmail}</strong>
+                  </p>
+                  <p style={{ fontSize: '13px', color: '#666', marginBottom: '15px' }}>
+                    Please check your inbox and click the verification link to activate your account.
+                  </p>
+                  
+                  <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      onClick={handleResendVerification}
+                      disabled={resendingEmail}
+                      style={{
+                        padding: '8px 16px',
+                        backgroundColor: resendingEmail ? '#ccc' : '#4a90e2',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: resendingEmail ? 'not-allowed' : 'pointer',
+                        fontSize: '14px'
+                      }}
+                    >
+                      {resendingEmail ? 'Sending...' : '📨 Resend Verification Email'}
+                    </button>
+                    
+                    <button
+                      type="button"
+                      onClick={handleCheckVerification}
+                      style={{
+                        padding: '8px 16px',
+                        backgroundColor: '#28a745',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                        fontSize: '14px'
+                      }}
+                    >
+                      ✓ I've Verified My Email
+                    </button>
+                  </div>
+                  
+                  <p style={{ fontSize: '12px', color: '#999', marginTop: '15px' }}>
+                    Didn't receive the email? Check your spam folder or resend it above.
+                  </p>
+                </div>
+              )}
 
               <div className="signin-prompt">
                 <span>Already have an account? </span>

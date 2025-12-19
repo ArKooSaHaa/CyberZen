@@ -43,34 +43,7 @@ body {
   z-index: -1;
 }
 
-/* Emergency Contact */
-.emergency-contact {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1001;
-  background: rgba(255, 0, 0, 0.9);
-  padding: 10px 20px;
-  border-radius: 25px;
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-  animation: emergencyPulse 2s infinite;
-}
-
-.emergency-text {
-  color: white;
-  font-weight: bold;
-  font-size: 14px;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
-
-@keyframes emergencyPulse {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
-  }
-}
+/* Emergency contact removed per request */
 
 /* Main Content - Fixed centering and spacing */
 .main-content {
@@ -78,7 +51,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 120px 20px 60px; /* Increased top padding for emergency button */
+  /* Normal top padding (reduced after removing emergency button) */
+  padding: 80px 20px 60px;
   min-height: 100vh;
   width: 100%;
 }
@@ -197,7 +171,8 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 40px;
-  align-items: start;
+  /* Stretch columns so both containers match height and alignment */
+  align-items: stretch;
   width: 100%;
   position: relative;
   z-index: 1;
@@ -305,12 +280,14 @@ body {
   border: 1px solid rgba(0, 255, 255, 0.25);
   border-radius: 15px;
   padding: 40px;
-  width: 150%;
+  width: 150%; /* ensure form fills its column, not overflowing */
   box-sizing: border-box;
-  height: fit-content;
+  
   display: flex;
   flex-direction: column;
   position: relative;
+  /* allow content to stretch the column height to match the sibling */
+  min-height: 100%;
 }
 
 .contact-form h3 {
@@ -345,8 +322,8 @@ body {
   font-size: 1rem;
   color: #ffffff;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   width: 100%;
   box-sizing: border-box;
   font-family: inherit;
@@ -544,15 +521,7 @@ body {
     min-width: 45px;
   }
 
-  .emergency-contact {
-    top: 15px;
-    right: 15px;
-    padding: 8px 15px;
-  }
-
-  .emergency-text {
-    font-size: 12px;
-  }
+  /* emergency UI removed */
 
   .contact-button {
     padding: 16px 30px;
@@ -630,11 +599,7 @@ body {
     letter-spacing: 0.5px;
   }
 
-  .emergency-contact {
-    top: 10px;
-    right: 10px;
-    padding: 6px 12px;
-  }
+  /* emergency UI removed */
 }
 
 /* Performance optimization for reduced motion */

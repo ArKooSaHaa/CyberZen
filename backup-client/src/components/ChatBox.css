@@ -1,0 +1,124 @@
+.chatbox-container {
+  width: 400px;
+  margin: 50px auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  font-family: sans-serif;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.chatbox-header {
+  padding: 15px;
+  background-color: #f1f1f1;
+  border-bottom: 1px solid #ccc;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.chatbox-header h2 {
+  margin: 0;
+  font-size: 1.2em;
+}
+
+.chatbox-messages {
+  flex-grow: 1;
+  padding: 15px;
+  height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.message {
+  padding: 10px 15px;
+  border-radius: 18px;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+.message p {
+  margin: 0;
+}
+
+.message span {
+  font-size: 0.75em;
+  color: #888;
+  display: block;
+  margin-top: 5px;
+  text-align: right;
+}
+
+.message.sent {
+  background-color: #dcf8c6;
+  align-self: flex-end;
+}
+
+.message.received {
+  background-color: #fff;
+  border: 1px solid #eee;
+  align-self: flex-start;
+}
+
+.typing-indicator {
+  padding: 5px 15px;
+  font-style: italic;
+  color: #888;
+}
+
+.chatbox-form {
+  display: flex;
+  padding: 15px;
+  border-top: 1px solid #ccc;
+}
+
+.chatbox-form input {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  margin-right: 10px;
+}
+
+.chatbox-form button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.chatbox-form button:hover {
+  background-color: #0056b3;
+}
+
+.chatbox-form button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.chatbox-error {
+  padding: 10px 15px;
+  background-color: #fee;
+  color: #c33;
+  border-top: 1px solid #fcc;
+  font-size: 0.9em;
+}
+
+.no-messages {
+  text-align: center;
+  color: #888;
+  padding: 20px;
+  font-style: italic;
+}
+
+.message-time {
+  font-size: 0.75em;
+  color: #888;
+  display: block;
+  margin-top: 5px;
+  text-align: right;
+}

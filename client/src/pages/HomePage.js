@@ -43,10 +43,6 @@ const HomePage = () => {
         <div className="particle particle-6"></div>
       </div>
 
-      {/* Emergency Contact */}
-      <div className="emergency-contact">
-        <span className="emergency-text">Emergency: 999</span>
-      </div>
 
       {/* Navigation Bar */}
       <NavigationBar currentPage="home" />

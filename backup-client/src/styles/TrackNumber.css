@@ -1,0 +1,357 @@
+/* Track Number Page Styles */
+
+.track-number-container {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  overflow-x: hidden;
+}
+
+/* Background Image */
+.background-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -2;
+}
+
+.background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: -1;
+}
+
+/* Emergency Contact */
+.emergency-contact {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1001;
+  background: rgba(255, 0, 0, 0.9);
+  padding: 10px 20px;
+  border-radius: 25px;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+  animation: emergencyPulse 2s infinite;
+}
+
+.emergency-text {
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes emergencyPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+  }
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px 40px;
+  min-height: 100vh;
+}
+
+.content-wrapper {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Track Number Container Inner */
+.track-number-container-inner {
+  background: rgba(0, 0, 0, 0.8);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: formSlideIn 0.8s ease-out;
+}
+
+@keyframes formSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Track Header */
+.track-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.track-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #00ffff;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  margin-bottom: 15px;
+  letter-spacing: 2px;
+  animation: titleGlow 3s infinite alternate;
+}
+
+@keyframes titleGlow {
+  from {
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  }
+  to {
+    text-shadow: 0 0 30px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.3);
+  }
+}
+
+.track-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Track Number Box */
+.track-number-box {
+  background: rgba(0, 255, 255, 0.05);
+  border: 2px solid rgba(0, 255, 255, 0.3);
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+  margin-bottom: 30px;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+  animation: trackBoxGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes trackBoxGlow {
+  from {
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+    border-color: rgba(0, 255, 255, 0.3);
+  }
+  to {
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.4);
+    border-color: rgba(0, 255, 255, 0.5);
+  }
+}
+
+.track-number-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.track-number-value {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #00ffff;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+  margin-bottom: 15px;
+  letter-spacing: 3px;
+  font-family: 'Courier New', monospace;
+  animation: numberPulse 2s ease-in-out infinite;
+}
+
+@keyframes numberPulse {
+  0%, 100% {
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+  }
+  50% {
+    text-shadow: 0 0 30px rgba(0, 255, 255, 1), 0 0 40px rgba(0, 255, 255, 0.5);
+  }
+}
+
+.track-number-note {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* Track Actions */
+.track-actions {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.back-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 15px 30px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.back-button:hover {
+  background: rgba(0, 255, 255, 0.15);
+  border-color: #00ffff;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
+}
+
+/* Track Info */
+.track-info {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.info-item:hover {
+  background: rgba(0, 255, 255, 0.1);
+  border-color: rgba(0, 255, 255, 0.3);
+  transform: translateX(5px);
+}
+
+.info-icon {
+  font-size: 1.5rem;
+  opacity: 0.8;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.info-text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  flex: 1;
+  text-align: left;
+  padding-top: 4px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 80px 15px 30px;
+  }
+
+  .track-number-container-inner {
+    padding: 30px 20px;
+    margin: 0 10px;
+  }
+
+  .track-title {
+    font-size: 2rem;
+  }
+
+  .track-subtitle {
+    font-size: 1rem;
+  }
+
+  .track-number-value {
+    font-size: 2.5rem;
+  }
+
+  .emergency-contact {
+    top: 15px;
+    right: 15px;
+    padding: 8px 15px;
+  }
+
+  .emergency-text {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .track-number-container-inner {
+    padding: 25px 15px;
+  }
+
+  .track-title {
+    font-size: 1.8rem;
+  }
+
+  .track-number-box {
+    padding: 20px;
+  }
+
+  .track-number-value {
+    font-size: 2rem;
+    letter-spacing: 2px;
+  }
+
+  .back-button {
+    padding: 12px 25px;
+    font-size: 1rem;
+  }
+
+  .info-item {
+    padding: 12px;
+  }
+
+  .info-icon {
+    font-size: 1.2rem;
+  }
+
+  .info-text {
+    font-size: 0.9rem;
+  }
+}
+
+/* Performance optimization for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .track-number-container-inner {
+    animation: none;
+  }
+
+  .track-title {
+    animation: none;
+  }
+
+  .emergency-contact {
+    animation: none;
+  }
+
+  .track-number-box {
+    animation: none;
+  }
+
+  .track-number-value {
+    animation: none;
+  }
+
+  .info-item:hover {
+    transform: none;
+  }
+}

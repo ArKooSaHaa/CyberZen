@@ -81,10 +81,6 @@ const DeleteAccount = () => {
     <div className="delete-account-container">
       <div className="background-image" style={{ backgroundImage: `url(${backgroundImage})` }} />
       <div className="background-overlay" />
-
-      <div className="emergency-contact">
-        <span className="emergency-text">Emergency: 999</span>
-      </div>
       <NavigationBar currentPage="profile" />
 
       <main className="main-content">
