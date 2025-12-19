@@ -7,7 +7,6 @@ import PasswordField from "../components/PasswordField";
 import Checkbox from "../components/Checkbox";
 import Button from "../components/Button";
 import LinkComponent from "../components/Link";
-import ApiConfigPrompt from "../components/ApiConfigPrompt";
 
 import { signUp } from "../services/api";
 import { signUpWithFirebase, sendVerificationEmail, reloadFirebaseUser } from "../services/firebaseAuth";
@@ -260,7 +259,6 @@ const SignUp = () => {
       </div>
 
       {/* Main Sign Up Form */}
-      <ApiConfigPrompt />
       <div className="signup-form-container">
         <div className="form-background">
           <div className="form-glow-border"></div>

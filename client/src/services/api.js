@@ -1,29 +1,14 @@
 import axios from "axios";
 
-// Allow an override stored in browser localStorage so deployed static sites
-// (e.g. Vercel) can be pointed at the real backend without rebuilding.
-const envBase = process.env.REACT_APP_API_BASE_URL;
-let overrideBase = null;
-if (typeof window !== "undefined") {
-  overrideBase = localStorage.getItem("REACT_APP_API_BASE_URL_OVERRIDE");
-}
-
-const resolvedBase = (overrideBase && overrideBase.trim()) || (envBase && envBase.trim()) || "";
-const API_BASE_URL = resolvedBase
-  ? `${resolvedBase.replace(/\/+$/, "")}/api`
-  : "/api"; // fallback to relative path if nothing is set
+// Use env variable provided at build time (Create React App reads REACT_APP_*)
+const envBase = process.env.REACT_APP_API_BASE_URL || "";
+const API_BASE_URL = envBase ? `${envBase.replace(/\/+$/, "")}/api` : "/api";
 
 // axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: { "Content-Type": "application/json" },
 });
-
-// Helpful debug log to confirm which base the app is using at runtime
-if (typeof window !== 'undefined') {
-  // eslint-disable-next-line no-console
-  console.info('[api] API_BASE_URL resolved to:', API_BASE_URL);
-}
 
 // fetch hoche
 const authHeaders = () => {
