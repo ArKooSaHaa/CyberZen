@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import Intro from './components/Intro';
+import LandingPage from './pages/LandingPage';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import HomePage from './pages/HomePage';
@@ -32,8 +33,6 @@ function App() {
   const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
-    // Verify API base URL is loaded
-    console.log('🔍 API_BASE_URL from env:', process.env.REACT_APP_API_BASE_URL);
     const skipped = sessionStorage.getItem('introSkipped');
     if (skipped === 'true') setShowIntro(false);
   }, []);
@@ -53,6 +52,7 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <Routes>
+          <Route path="/" element={<LandingPage />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/home" element={<HomePage />} />
@@ -78,7 +78,6 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
-          <Route path="/" element={<Navigate to="/signin" replace />} />
         </Routes>
       </div>
     </BrowserRouter>

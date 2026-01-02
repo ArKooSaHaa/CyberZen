@@ -1,13 +1,6 @@
 import axios from "axios";
 
-// Use env variable provided at build time (Create React App reads REACT_APP_*)
-const envBase = process.env.REACT_APP_API_BASE_URL || "";
-const API_BASE_URL = envBase ? `${envBase.replace(/\/+$/, "")}/api` : "/api";
-
-// Debug: log the resolved API base URL
-if (typeof window !== 'undefined') {
-  console.log('📡 Resolved API_BASE_URL:', API_BASE_URL);
-}
+const API_BASE_URL = "http://localhost:5000/api";
 
 // axios instance
 const api = axios.create({
@@ -111,7 +104,7 @@ export const submitReport = async (formData) => {
 
     // Do NOT set 'Content-Type' manually for FormData; the browser will set the correct
     // multipart boundary. Include auth header when available.
-    const response = await api.post(`/reports`, formData, { headers });
+    const response = await axios.post(`${API_BASE_URL}/reports`, formData, { headers });
     return response;
   } catch (error) {
     throw new Error(errMsg(error));
