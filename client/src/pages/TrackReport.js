@@ -37,8 +37,8 @@ const handleTrackReport = async () => {
   setError('');
 
   try {
-    const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
-    const response = await axios.get(`${API_BASE_URL}/reports/${trackNumber}`);
+    const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+    const response = await axios.get(`${API_URL}/api/reports/${trackNumber}`);
     console.log('API Response:', response.data);  // Log the response data for debugging
     setReportStatus(response.data.status);  // Assuming 'status' is returned from the server
   } catch (error) {
