@@ -48,9 +48,34 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use((req, _res, next) => { console.log(req.method, req.url); next(); });
+
+// Health check endpoint
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
+// Root endpoint for testing
+app.get("/", (_req, res) => res.json({ 
+  message: "CyberZens API Server is running",
+  status: "ok",
+  timestamp: new Date().toISOString()
+}));
+
+// API routes
 app.use("/api", router);
+
+// Base API endpoint - return API info
+app.get("/api", (_req, res) => res.json({ 
+  message: "CyberZens API",
+  version: "1.0.0",
+  endpoints: {
+    health: "/health",
+    users: "/api/users",
+    reports: "/api/reports",
+    test: "/api/test"
+  }
+}));
+
+// Test endpoint to verify API routing
+app.get("/api/test", (_req, res) => res.json({ message: "API routes are working!" }));
 
 
 // Global error handling middleware
