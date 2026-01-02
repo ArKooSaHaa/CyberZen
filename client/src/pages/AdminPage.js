@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/AdminPage.css';
 
-const API_BASE_URL = `${process.env.REACT_APP_API_BASE_URL}/api`;
-
 const AdminPage = () => {
   const navigate = useNavigate();
   const [reports, setReports] = useState([]);
@@ -24,6 +22,7 @@ const AdminPage = () => {
   const fetchReports = async () => {
     try {
       setError(null);
+      const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
       const response = await axios.get(`${API_BASE_URL}/reports/all`);
       const newReports = response.data;
       
@@ -91,6 +90,7 @@ useEffect(() => {
 
   const handleStatusUpdate = async (trackNumber, newStatus) => {
     try {
+      const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
       await axios.put(`${API_BASE_URL}/reports/${trackNumber}/status`, { status: newStatus });
       fetchReports(); // Refetch reports to get the updated data
     } catch (error) {

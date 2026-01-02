@@ -14,7 +14,19 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+// CORS configuration - allows all origins in development, specific origins in production
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? [
+        process.env.FRONTEND_URL,
+        'https://*.vercel.app' // Allow all Vercel preview deployments
+      ].filter(Boolean) // Remove undefined values
+    : true, // Allow all origins in development
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use((req, _res, next) => { console.log(req.method, req.url); next(); });

@@ -1,87 +1,114 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import './App.css';
-import Intro from './components/Intro';
-import LandingPage from './pages/LandingPage';
-import SignIn from './pages/SignIn';
-import SignUp from './pages/SignUp';
-import HomePage from './pages/HomePage';
-import AdminPage from './pages/AdminPage';
-import AdminChatDashboard from './pages/AdminChatDashboard';
-import SubmitReport from './pages/SubmitReport';
-import TrackReport from './pages/TrackReport';
-import Contact from './pages/Contact';
-import Profile from './pages/Profile';
-import HowItWorks from './pages/HowItWorks';
-import ChangePassword from './pages/ChangePassword';
-import DeleteAccount from './pages/DeleteAccount';
-import TrackNumber from './pages/TrackNumber';
-import TermsOfService from './pages/TermsOfService';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import HelpCenter from './pages/HelpCenter';
-import FAQ from './pages/FAQ';
-import TechnicalSupport from './pages/TechnicalSupport';
-import SecurityPolicy from './pages/SecurityPolicy';
-import Encryption from './pages/Encryption';
-import Compliance from './pages/Compliance';
-import ContactUs from './pages/ContactUs';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import VerifyEmail from './pages/VerifyEmail';
+import axios from "axios";
 
-function App() {
-  const [showIntro, setShowIntro] = useState(true);
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
-  useEffect(() => {
-    const skipped = sessionStorage.getItem('introSkipped');
-    if (skipped === 'true') setShowIntro(false);
-  }, []);
+// axios instance
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: { "Content-Type": "application/json" },
+});
 
-  if (showIntro) {
-    return (
-      <Intro
-        onFinish={() => {
-          sessionStorage.setItem('introSkipped', 'true');
-          setShowIntro(false);
-        }}
-      />
-    );
+// fetch hoche
+const authHeaders = () => {
+  const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+const errMsg = (err) =>
+  err?.response?.data?.message || err?.message || "Request failed";
+
+
+// Sign up -> post hoise
+export const signUp = async (userData) => {
+  try {
+    const response = await api.post("/users/signup", userData);
+    return response; // keep returning full axios response to match your usage: const { data } = await signUp(...)
+  } catch (error) {
+    throw new Error(errMsg(error));
   }
+};
 
-  return (
-    <BrowserRouter>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/admin/chat" element={<AdminChatDashboard />} />
-          <Route path="/submit-report" element={<SubmitReport />} />
-          <Route path="/track-report" element={<TrackReport />} />
-          <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/delete-account" element={<DeleteAccount />} />
-          <Route path="/trackNumber" element={<TrackNumber />} />
-          <Route path="/terms" element={<TermsOfService />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/help" element={<HelpCenter />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/support" element={<TechnicalSupport />} />
-          <Route path="/security" element={<SecurityPolicy />} />
-          <Route path="/encryption" element={<Encryption />} />
-          <Route path="/compliance" element={<Compliance />} />
-          <Route path="/contact-us" element={<ContactUs />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/verify-email" element={<VerifyEmail />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
-  );
-}
+// Sign in -> post hoche
+export const signIn = async (credentials) => {
+  try {
+    const response = await api.post("/users/login", credentials);
+    return response; // const { data } = await signIn(...)
+  } catch (error) {
+    throw new Error(errMsg(error));
+  }
+};
 
-export default App;
+// Change password -> post hoche
+export const changePassword = async ({ username, currentPassword, newPassword }) => {
+  try {
+    const response = await api.post(
+      "/users/change-password",
+      { username, currentPassword, newPassword }
+    );
+    return response; 
+  } catch (error) {
+    throw new Error(errMsg(error));
+  }
+};
+
+// fetch hoche  get er madhome
+export const getMe = async () => {
+  const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+  if (!token) throw new Error("Not authenticated");
+  const response = await api.get("/users/me", {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response; 
+};
+
+// Delete request diche so that delete  the account 
+export const deleteAccount = async ({ password, reason }) => {
+  try {
+    const headers = authHeaders();
+    if (!headers.Authorization) throw new Error("Not authenticated");
+    const response = await api.delete("/users/delete-account", {
+      headers,
+      data: { password, reason },  // body jache in config for DELETE
+    });
+    return response;
+  } catch (error) {
+    throw new Error(errMsg(error));
+  }
+};
+
+// Update email verification status in MongoDB
+export const updateEmailVerified = async ({ email, emailVerified }) => {
+  try {
+    const response = await api.post("/users/update-email-verified", { email, emailVerified });
+    return response;
+  } catch (error) {
+    throw new Error(errMsg(error));
+  }
+};
+
+
+// Testing 
+export const getUsers = async () => {
+  try {
+    const response = await api.get("/users");
+    return response;
+  } catch (error) {
+    throw new Error(errMsg(error));
+  }
+};
+
+export const submitReport = async (formData) => {
+  try {
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    // Do NOT set 'Content-Type' manually for FormData; the browser will set the correct
+    // multipart boundary. Include auth header when available.
+    const response = await axios.post(`${API_BASE_URL}/reports`, formData, { headers });
+    return response;
+  } catch (error) {
+    throw new Error(errMsg(error));
+  }
+};
+
+export default api;
