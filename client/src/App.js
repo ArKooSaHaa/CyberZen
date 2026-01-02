@@ -32,6 +32,8 @@ function App() {
   const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
+    // Verify API base URL is loaded
+    console.log('🔍 API_BASE_URL from env:', process.env.REACT_APP_API_BASE_URL);
     const skipped = sessionStorage.getItem('introSkipped');
     if (skipped === 'true') setShowIntro(false);
   }, []);

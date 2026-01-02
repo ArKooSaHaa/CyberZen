@@ -4,6 +4,11 @@ import axios from "axios";
 const envBase = process.env.REACT_APP_API_BASE_URL || "";
 const API_BASE_URL = envBase ? `${envBase.replace(/\/+$/, "")}/api` : "/api";
 
+// Debug: log the resolved API base URL
+if (typeof window !== 'undefined') {
+  console.log('📡 Resolved API_BASE_URL:', API_BASE_URL);
+}
+
 // axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
